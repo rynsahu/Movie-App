@@ -1,18 +1,25 @@
-import React from 'react';
+import React from "react";
 
-const ListGroup = ({ listGroup, onGroupChange, currentGroup }) => {
-    return(
-        <ul className="list-group">
-            {listGroup.map(group => 
-                <li 
-                    key={group._id} 
-                    className={group.name === currentGroup ? "list-group-item active":"list-group-item"}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onGroupChange(group.name)}>{group.name}
-                </li>
-            )}
-        </ul>
-    );
-}
+const ListGroup = ({ items, onItemSelect, valueProperty, textProperty, selectedItem }) => {
+  return (
+    <ul className="list-group">
+      {items.map(item => (
+        <li
+          key={item[valueProperty]}
+          className={ item === selectedItem ? "list-group-item active" : "list-group-item" }
+          style={{ cursor: "pointer" }}
+          onClick={() => onItemSelect(item)}
+        >
+          {item[textProperty]}
+        </li>
+      ))}
+    </ul>
+  );
+};
 
-export default ListGroup
+ListGroup.defaultProps = {
+  valueProperty: "_id",
+  textProperty: "name"
+};
+
+export default ListGroup;

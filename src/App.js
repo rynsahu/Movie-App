@@ -1,19 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
 import Movie from './components/movies';
 
-class App extends Component {
-  state = {
-
-  };
-
-  render() {
-    return(
-      <main className="container"><Movie /></main>
-    );
-  }
-
-  handleDelete = movie =>{};
+const App = () => {
+  return (
+    <main className="container">
+      <Movie />
+    </main>
+  );
 }
 
 export default App;

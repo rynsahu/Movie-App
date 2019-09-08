@@ -8,7 +8,8 @@ body {
   padding: 20px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}                                                           
+.clickable {
+  cursor: pointer;
+}
+
+
