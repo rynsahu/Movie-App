@@ -5,7 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding: 20px;
+  padding: 0;
+}
+
+.NavBar{
+  margin-bottom: 2.5rem;
 }
 
 .clickable {
