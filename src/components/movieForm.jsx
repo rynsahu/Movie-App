@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 const MovieDescription = ({ match, history }) => {
     return(
         <div>
