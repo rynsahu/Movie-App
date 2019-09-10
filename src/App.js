@@ -1,12 +1,13 @@
 import React from 'react';
-import './App.css';
 import { Route, Switch, Redirect } from 'react-router-dom'
 import NavBar from './components/navBar';
 import Movie from './components/movies';
 import Customer from './components/customers';
 import Rental from './components/rentals';
-import NotFound from './components/notFound';
 import MovieDescription from './components/movieForm'
+import NotFound from './components/notFound';
+import LoginForm from './components/login'
+import './App.css';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
       <NavBar />
       <main className="container">
         <Switch>
+          <Route path="/login" exact component={LoginForm} />
           <Route path="/movies" exact component={Movie} />
           <Route path="/customers" component={Customer} />
           <Route path="/rentals" component={Rental} />
