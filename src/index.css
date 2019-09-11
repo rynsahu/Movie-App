@@ -16,8 +16,34 @@ body {
   cursor: pointer;
 }
 
-.Login-form{
+.headings{
   max-width: 500px;
   margin: auto;
+  margin-bottom: 1rem;
 }
+
+.form-style{
+  max-width: 500px;
+  margin: auto;
+  padding: 1.2rem;
+  border: 1px solid #d1d5da;
+  border-radius: 5px;
+}
+
+.form-alert{
+  margin-top: 5px;
+}
+
+.table-style{
+  border: 1px solid #d1d5da;
+  border-radius: 5px;
+  margin-bottom: 1.5rem;
+  overflow: auto;
+}
+
+.table{
+  margin: 0;
+}
+
+
 

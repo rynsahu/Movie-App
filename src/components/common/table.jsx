@@ -4,17 +4,19 @@ import TableHeader from './tableHeader';
 
 const Table = ({ columns, onSort, sortColumn, data }) => {
     return ( 
-        <table className="table">
-            <TableHeader 
-                columns={columns} 
+        <div className="table-style">
+            <table className="table">
+                <TableHeader
+                columns={columns}
                 onSort={onSort}
                 sortColumn={sortColumn}
-            />
-            <TableBody 
-                columns={columns} 
+                />
+                <TableBody
+                columns={columns}
                 data={data}
-            />
-        </table>        
+                />
+            </table>
+        </div>      
      );
 }
  
