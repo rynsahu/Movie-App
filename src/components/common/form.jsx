@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Joi from 'joi';
 import Input from './input';
+import Select from './select';
 
 
 class Form extends Component {
@@ -27,7 +28,7 @@ class Form extends Component {
         this.setState({ errors: errors || {} });
         if(errors) return;
 
-        this.doSubmit();
+        this.doSubmit(e);
     };
 
     validateProperty = ({ name, value }) => {
@@ -63,9 +64,24 @@ class Form extends Component {
         );
     }
 
+    renderSelect(name, label, options) {
+        return (
+            <Select 
+                label={label} 
+                name={name} 
+                options={options} 
+                onChange={this.handleChange}
+                error={this.state.errors[name]}
+            />
+        );
+    }
+
     renderButton(label) {
         return(
-            <button disabled={this.validate()} className="btn btn-primary">
+            <button 
+                disabled={this.validate()} 
+                className="btn btn-primary"
+            >
                 {label}
             </button>
         );

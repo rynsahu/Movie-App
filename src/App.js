@@ -4,10 +4,10 @@ import NavBar from './components/navBar';
 import Movie from './components/movies';
 import Customer from './components/customers';
 import Rental from './components/rentals';
-import MovieDescription from './components/movieForm'
 import NotFound from './components/notFound';
 import LoginForm from './components/login'
 import RegisterForm from './components/registerForm';
+import MovieForm from './components/movieForm'
 import './App.css';
 
 const App = () => {
@@ -21,7 +21,7 @@ const App = () => {
           <Route path="/movies" exact component={Movie} />
           <Route path="/customers" component={Customer} />
           <Route path="/rentals" component={Rental} />
-          <Route path="/movies/:id" exact component={MovieDescription} />
+          <Route path="/movies/:id" exact component={MovieForm} />
           <Route path="/not-found" component={NotFound}/>
           <Redirect from="/" exact to="/movies" />
           <Redirect to="/not-found" />

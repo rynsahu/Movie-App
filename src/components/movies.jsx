@@ -1,10 +1,12 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import { getMovies } from "../services/fakeMovieService";
 import { getGenres } from "../services/fakeGenreService";
 import Pegination from "./common/pagination";
 import { paginate } from "../util/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
+import Search from './common/search';
 import _ from 'lodash';
 
 class Movie extends Component {
@@ -13,7 +15,8 @@ class Movie extends Component {
     currentPage: 1,
     pageSize: 4,
     genres: [],
-    sortColumn: { path: 'title', order: 'asc' }
+    sortColumn: { path: 'title', order: 'asc' },
+    query: ''
   };
 
   componentDidMount() {
@@ -31,7 +34,11 @@ class Movie extends Component {
   };
 
   handleDelete = movie => {
-    const movies = this.state.movies.filter(m => m._id !== movie._id);
+    const movies = [...this.state.movies];
+
+    const index = movies.indexOf(movie._id);
+    movies.splice(index, 1);
+
     this.setState({ movies });
   };
 
@@ -47,12 +54,22 @@ class Movie extends Component {
     this.setState({ sortColumn });
   };
 
-  getPagedData() {
+  getPagedData(query) {
     const { movies: allMovies, currentPage, pageSize, selectedGenre, sortColumn } = this.state;
 
-    const filtered = selectedGenre && selectedGenre._id
+    let filtered;
+    if(query) {
+      filtered = allMovies.filter(m => m.title.toLowerCase().includes(query.toLowerCase()));
+    }
+    else {
+      filtered = selectedGenre && selectedGenre._id
         ? allMovies.filter(m => m.genre._id === selectedGenre._id)
         : allMovies;
+    }
+
+    // const filtered = selectedGenre && selectedGenre._id
+    //     ? allMovies.filter(m => m.genre._id === selectedGenre._id)
+    //     : allMovies;
     
     const sorted = _.orderBy(filtered, sortColumn.path, sortColumn.order);
 
@@ -61,9 +78,13 @@ class Movie extends Component {
     return { movies, totalCount: filtered.length };
   }
 
+  onSearchQuery = query => {
+    this.setState({ query });
+  }
+
   render() {
-    const { genres, currentPage, pageSize, selectedGenre, sortColumn } = this.state;
-    const { movies, totalCount } = this.getPagedData();
+    const { genres, currentPage, pageSize, selectedGenre, sortColumn, query } = this.state;
+    const { movies, totalCount } = this.getPagedData(query);
 
     return (
       <div className="row">
@@ -75,9 +96,16 @@ class Movie extends Component {
           />
         </div>
         <div className="col">
+          <Link 
+            to="/movies/new"
+            className="btn btn-primary Movie-btn"
+          >
+              New Movie
+          </Link> 
           <p>
             Showing <span>{totalCount}</span> movies in the database.
           </p>
+          <Search searchQuery={this.onSearchQuery}/>
           <MoviesTable
             movies={movies}
             sortColumn={sortColumn}
