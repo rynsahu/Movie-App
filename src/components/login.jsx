@@ -1,35 +1,54 @@
-import React from 'react';
-import Form from './common/form';
-import Joi from 'joi';
+import React from "react";
+import Form from "./common/form";
+import Joi from "joi";
+import auth from "../services/authService";
+import { Redirect } from "react-router-dom";
 
 class LoginForm extends Form {
-    state = {
-        data: {username: '', password: ''},
-        errors: {}
-    }
+  state = {
+    data: { username: "", password: "" },
+    errors: {}
+  };
 
-    schema = {
-        username: Joi.string().required().label('Username'),
-        password: Joi.string().required().label('Password')
-    }
+  schema = {
+    username: Joi.string()
+      .required()
+      .label("Username"),
+    password: Joi.string()
+      .required()
+      .label("Password")
+  };
 
-    doSubmit = () => {
-        //server call
-        console.log('Submitted')
-    }
+  doSubmit = async () => {
+    try {
+      const { username, password } = this.state.data;
+      await auth.login(username, password);
 
-    render() {
-        return(
-            <div >
-                <h1 className="headings">Login</h1>
-                <form onSubmit={this.handleSubmit} className="form-style">
-                    {this.renderInput("username", "Username", "Enter username")}
-                    {this.renderInput("password", "Password", "Enter password", "password")}
-                    {this.renderButton('Login')}
-                </form>
-            </div>
-        );
+      const { state } = this.props.location;
+      window.location = state ? state.from.pathname : "/";
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.username = ex.response.data;
+        this.setState({ errors });
+      }
     }
+  };
+
+  render() {
+    if (auth.getCurrentUser()) return <Redirect to="/" />;
+
+    return (
+      <div>
+        <h1 className="headings">Login</h1>
+        <form onSubmit={this.handleSubmit} className="form-style">
+          {this.renderInput("username", "Username")}
+          {this.renderInput("password", "Password", "password")}
+          {this.renderButton("Login")}
+        </form>
+      </div>
+    );
+  }
 }
 
-export default LoginForm; 
+export default LoginForm;

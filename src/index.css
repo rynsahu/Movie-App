@@ -8,7 +8,7 @@ body {
   padding: 0;
 }
 
-.NavBar{
+.NavBar {
   margin-bottom: 2.5rem;
 }
 
@@ -16,13 +16,13 @@ body {
   cursor: pointer;
 }
 
-.headings{
+.headings {
   max-width: 500px;
   margin: auto;
   margin-bottom: 1rem;
 }
 
-.form-style{
+.form-style {
   max-width: 500px;
   margin: auto;
   padding: 1.2rem;
@@ -30,24 +30,25 @@ body {
   border-radius: 5px;
 }
 
-.form-alert{
+.List-group {
+  margin-bottom: 20px;
+}
+
+.form-alert {
   margin-top: 5px;
 }
 
-.table-style{
+.table-style {
   border: 1px solid #d1d5da;
   border-radius: 5px;
   margin-bottom: 1.5rem;
   overflow: auto;
 }
 
-.table{
+.table {
   margin: 0;
 }
 
-.Movie-btn{
+.Movie-btn {
   margin-bottom: 1.2rem;
 }
-
-
-

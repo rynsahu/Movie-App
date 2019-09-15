@@ -1,27 +1,32 @@
 import React, { Component } from "react";
-import { Link } from 'react-router-dom';
-import { getMovies } from "../services/fakeMovieService";
-import { getGenres } from "../services/fakeGenreService";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { getMovies, deleteMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
 import Pegination from "./common/pagination";
 import { paginate } from "../util/paginate";
 import ListGroup from "./common/listGroup";
 import MoviesTable from "./moviesTable";
-import Search from './common/search';
-import _ from 'lodash';
+import SearchBox from "./common/searchBox";
+import _ from "lodash";
 
 class Movie extends Component {
   state = {
     movies: [],
     currentPage: 1,
-    pageSize: 4,
+    pageSize: 8,
     genres: [],
-    sortColumn: { path: 'title', order: 'asc' },
-    query: ''
+    searchQuery: "",
+    selectedGenre: null,
+    sortColumn: { path: "title", order: "asc" }
   };
 
-  componentDidMount() {
-    const genres = [{ _id: '', name: "All Genres" }, ...getGenres()];
-    this.setState({ movies: getMovies(), genres});
+  async componentDidMount() {
+    const { data } = await getGenres();
+    const genres = [{ _id: "", name: "All Genres" }, ...data];
+
+    const { data: movies } = await getMovies();
+    this.setState({ movies, genres });
   }
 
   handleLike = movie => {
@@ -33,13 +38,20 @@ class Movie extends Component {
     this.setState({ movies });
   };
 
-  handleDelete = movie => {
-    const movies = [...this.state.movies];
-
-    const index = movies.indexOf(movie._id);
-    movies.splice(index, 1);
-
+  handleDelete = async movie => {
+    const originalMovies = this.state.movies;
+    const movies = originalMovies.filter(m => m._id !== movie._id);
     this.setState({ movies });
+
+    try {
+      await deleteMovie(movie._id);
+    } catch (ex) {
+      console.log(ex);
+      if (ex.response && ex.response.status === 404)
+        toast.error("This movie has already been deleted.");
+
+      this.setState({ movies: originalMovies });
+    }
   };
 
   handlePage = page => {
@@ -47,30 +59,39 @@ class Movie extends Component {
   };
 
   handleGenreSelect = genre => {
-    this.setState({ selectedGenre: genre, currentPage: 1 });
+    this.setState({ selectedGenre: genre, searchQuery: "", currentPage: 1 });
   };
 
   handleSort = sortColumn => {
     this.setState({ sortColumn });
   };
 
-  getPagedData(query) {
-    const { movies: allMovies, currentPage, pageSize, selectedGenre, sortColumn } = this.state;
+  handelSearch = query => {
+    this.setState({ searchQuery: query, selectedGenre: null, currentPage: 1 });
+  };
+
+  getPagedData() {
+    const {
+      movies: allMovies,
+      currentPage,
+      pageSize,
+      selectedGenre,
+      sortColumn,
+      searchQuery
+    } = this.state;
 
     let filtered;
-    if(query) {
-      filtered = allMovies.filter(m => m.title.toLowerCase().includes(query.toLowerCase()));
-    }
-    else {
-      filtered = selectedGenre && selectedGenre._id
-        ? allMovies.filter(m => m.genre._id === selectedGenre._id)
-        : allMovies;
+    if (searchQuery) {
+      filtered = allMovies.filter(m =>
+        m.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      filtered =
+        selectedGenre && selectedGenre._id
+          ? allMovies.filter(m => m.genre._id === selectedGenre._id)
+          : allMovies;
     }
 
-    // const filtered = selectedGenre && selectedGenre._id
-    //     ? allMovies.filter(m => m.genre._id === selectedGenre._id)
-    //     : allMovies;
-    
     const sorted = _.orderBy(filtered, sortColumn.path, sortColumn.order);
 
     const movies = paginate(sorted, currentPage, pageSize);
@@ -78,17 +99,21 @@ class Movie extends Component {
     return { movies, totalCount: filtered.length };
   }
 
-  onSearchQuery = query => {
-    this.setState({ query });
-  }
-
   render() {
-    const { genres, currentPage, pageSize, selectedGenre, sortColumn, query } = this.state;
-    const { movies, totalCount } = this.getPagedData(query);
+    const {
+      genres,
+      currentPage,
+      pageSize,
+      selectedGenre,
+      sortColumn,
+      searchQuery
+    } = this.state;
+    const { user } = this.props;
+    const { movies, totalCount } = this.getPagedData();
 
     return (
       <div className="row">
-        <div className="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+        <div className="col-xl-2 col-lg-3 col-md-3 col-sm-12">
           <ListGroup
             items={genres}
             onItemSelect={this.handleGenreSelect}
@@ -96,16 +121,15 @@ class Movie extends Component {
           />
         </div>
         <div className="col">
-          <Link 
-            to="/movies/new"
-            className="btn btn-primary Movie-btn"
-          >
+          {user && (
+            <Link to="/movies/new" className="btn btn-primary Movie-btn">
               New Movie
-          </Link> 
+            </Link>
+          )}
           <p>
             Showing <span>{totalCount}</span> movies in the database.
           </p>
-          <Search searchQuery={this.onSearchQuery}/>
+          <SearchBox value={searchQuery} onChange={this.handelSearch} />
           <MoviesTable
             movies={movies}
             sortColumn={sortColumn}
